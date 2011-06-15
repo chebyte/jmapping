@@ -148,23 +148,37 @@
         if (settings.category_icon_options){
           icon_options = chooseIconOptions(place_data.category);
           if ((typeof icon_options === "string") || (icon_options instanceof google.maps.MarkerImage)){
-            marker = new google.maps.Marker({
+            marker_opts = {
               icon: icon_options,
               position: point,
               map: map
-            });
+            };
           } else {
-            marker = new StyledMarker({
+            marker_opts = {
               styleIcon: new StyledIcon(StyledIconTypes.MARKER, icon_options),
               position: point,
               map: map
-            });
+            };
           }
         } else {
-          marker = new google.maps.Marker({
+          marker_opts = {
             position: point,
             map: map
-          });
+          };
+        }
+
+				if (settings.animation){
+					marker_opts = $.extend(marker_opts, {animation: google.maps.Animation.DROP})
+				}
+        if (settings.category_icon_options){
+          icon_options = chooseIconOptions(place_data.category);
+          if ((typeof icon_options === "string") || (icon_options instanceof google.maps.MarkerImage)){
+            marker = new google.maps.Marker(marker_opts);
+          } else {
+            marker = new StyledMarker(marker_opts);
+          }
+        } else {
+          marker = new google.maps.Marker(marker_opts);
         }
 
         $info_window_elm = $place_elm.find(settings.info_window_selector);
@@ -175,6 +189,16 @@
           });
           info_windows.push(info_window);
           google.maps.event.addListener(marker, 'click', function() {
+						if (settings.animation){
+							if (marker.getAnimation() != null) {
+							    marker.setAnimation(null);
+							  } else {
+							    marker.setAnimation(google.maps.Animation.BOUNCE);
+							  }
+								setTimeout(function() {
+					    		marker.setAnimation(null);
+						    }, settings.timeout_animation);
+						}
             $.each(info_windows, function(index, iwindow){
               if (info_window != iwindow){
                 iwindow.close();
@@ -266,7 +290,8 @@
       info_window_selector: '.info-box',
       info_window_max_width: 425,
       default_point: {lat: 0.0, lng: 0.0},
-      metadata_options: {type: 'attr', name: 'data-jmapping'}
+      metadata_options: {type: 'attr', name: 'data-jmapping'},
+			timeout_animation: '3000'
     },
     makeGLatLng: function(place_point){
       return new google.maps.LatLng(place_point.lat, place_point.lng);

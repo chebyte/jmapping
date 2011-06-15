@@ -81,7 +81,12 @@ Options
 
 These are options that can be passed to the `jMapping` function to change specific settings.
 
-
+* `animation`:
+  * *Default*: `false`
+  * This selector set animation for the markers when receive a click
+* `timeout_animation`:
+  * *Default*: `3000`
+  * This selector set timeout for animation markers
 * `side_bar_selector`:
   * *Default*: `"#map-side-bar:first"`
   * This defines the selector where location items will be searched for within.
